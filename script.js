@@ -2,7 +2,7 @@ window.addEventListener("load", () => {
   const canvas = document.getElementById("myCanvas");
   window.ctx = canvas.getContext("2d");
   const game = new Game();
-  setInterval(() => game.tick(), 100);
+  setInterval(() => game.moveAnt(), 100);
 });
 
 // canvas size is 500x500, so we have a 50x50 grid of 10px boxes
@@ -21,10 +21,10 @@ class Game {
 
     // need to determine if the current box is filled or not and the coords of the box in front of the ant
     // then, flip the box, rotate the ant, and move forward
-    if (Math.abs(this.direction) === 360) this.direction = 0;
     isCoordinateFilled(this.curBox)
-      ? (this.direction += 90)
-      : (this.direction -= 90);
+      ? (this.direction -= 90)
+      : (this.direction += 90);
+    if (Math.abs(this.direction) === 360) this.direction = 0;
     flipBox(this.curBox);
     this.curBox = this.getBoxInFront();
   }
@@ -54,4 +54,21 @@ const isCoordinateFilled = (coords) => {
   return imageData["data"]["0"] > 0;
 };
 
-const flipBox = (coords) => {};
+const flipBox = (coords) => {
+  let x, y;
+  [x, y] = coords;
+  if (isCoordinateFilled(coords)) {
+    clearBox(x, y);
+  } else {
+    fillBox(x, y);
+  }
+};
+
+const fillBox = (x, y, color = "black") => {
+  window.ctx.fillStyle = color;
+  window.ctx.fillRect(x * BOX_SIZE, y * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+};
+
+const clearBox = (x, y) => {
+  window.ctx.clearRect(x * BOX_SIZE, y * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+};
