@@ -66,3 +66,27 @@ class Game {
     window.ctx.clearRect(x * BOX_SIZE, y * BOX_SIZE, BOX_SIZE, BOX_SIZE);
   }
 }
+
+const addRuleButton = document.getElementById("addRuleButton");
+addRuleButton.addEventListener("click", addRuleToList);
+const ruleList = document.getElementById("ruleList");
+
+function addRuleToList() {
+  const rule = document.createElement("form");
+  createRadios(rule);
+  ruleList.appendChild(rule);
+  ruleList.appendChild(document.createElement("br"));
+}
+
+function createRadios(rule, n) {
+  for (let i = 0; i < 2; i++) {
+    const input = document.createElement("input");
+    const label = document.createElement("label");
+    i === 0 ? (label.innerHTML = "L") : (label.innerHTML = "R");
+    input.setAttribute("type", "radio");
+    input.setAttribute("class", "radio");
+    input.setAttribute("name", "radio");
+    rule.appendChild(input);
+    rule.appendChild(label);
+  }
+}
