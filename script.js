@@ -12,12 +12,14 @@ class Game {
   constructor() {
     this.curBox = [50, 50]; // start in middle
     this.direction = 0; // 0 degrees = north, 90 = east, etc...
+    addRuleToList("#FFFFFF", "R");
+    addRuleToList("#000000", "L");
   }
 
   moveAnt() {
     // if on an empty box, turn 90 CCW, flip the color, move forward
     // if on a filled box, turn 90 CW, flip the color, move forward
-
+    var ruleRadios = document.getElementsByClassName("radio");
     this.isCoordinateFilled(this.curBox, this.direction)
       ? (this.direction -= 90)
       : (this.direction += 90);
@@ -71,14 +73,18 @@ const addRuleButton = document.getElementById("addRuleButton");
 addRuleButton.addEventListener("click", addRuleToList);
 const ruleList = document.getElementById("ruleList");
 
-function addRuleToList() {
-  const rule = document.createElement("form");
-  createRadios(rule);
-  ruleList.appendChild(rule);
+function addRuleToList(color, direction) {
+  const ruleForm = document.createElement("form");
+  createRadios(ruleForm);
+  direction === "L"
+    ? (ruleForm.children[0].checked = true)
+    : (ruleForm.children[2].checked = true);
+
+  ruleList.appendChild(ruleForm);
   ruleList.appendChild(document.createElement("br"));
 }
 
-function createRadios(rule, n) {
+function createRadios(ruleForm) {
   for (let i = 0; i < 2; i++) {
     const input = document.createElement("input");
     const label = document.createElement("label");
@@ -86,7 +92,7 @@ function createRadios(rule, n) {
     input.setAttribute("type", "radio");
     input.setAttribute("class", "radio");
     input.setAttribute("name", "radio");
-    rule.appendChild(input);
-    rule.appendChild(label);
+    ruleForm.appendChild(input);
+    ruleForm.appendChild(label);
   }
 }
