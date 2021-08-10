@@ -2,7 +2,7 @@ window.addEventListener("load", () => {
   const canvas = document.getElementById("myCanvas");
   window.ctx = canvas.getContext("2d");
   const game = new Game();
-  setInterval(() => game.moveAnt(), 1);
+  setInterval(() => game.moveAnt(), 100);
 });
 
 // canvas size is 500x500, so using 5px boxes gives us a 100x100 grid
@@ -12,8 +12,8 @@ class Game {
   constructor() {
     this.curBox = [50, 50]; // start in middle
     this.direction = 0; // 0 degrees = north, 90 = east, etc...
-    addRuleToList("#FFFFFF", "R");
-    addRuleToList("#000000", "L");
+    addRuleToList([0, 0, 0, 0], "R");
+    addRuleToList([0, 0, 0, 255], "L");
   }
 
   moveAnt() {
@@ -25,9 +25,17 @@ class Game {
       : (this.direction += 90);
 
     if (Math.abs(this.direction) === 360) this.direction = 0;
-    this.flipBox(this.curBox, this.direction);
+    this.colorBox(this.curBox);
     const nextBox = this.getBoxInFront();
     this.curBox = nextBox;
+  }
+
+  getCoordinateInfo(coords) {
+    let x, y;
+    [x, y] = coords;
+    const imageData = window.ctx.getImageData(x * BOX_SIZE, y * BOX_SIZE, 1, 1);
+
+    console.log(imageData["data"]);
   }
 
   getBoxInFront() {
@@ -53,13 +61,13 @@ class Game {
     return imageData["data"]["3"] > 0;
   }
 
-  flipBox(coords) {
+  colorBox(coords) {
     let x, y;
     [x, y] = coords;
     this.isCoordinateFilled(coords) ? this.clearBox(x, y) : this.fillBox(x, y);
   }
 
-  fillBox(x, y, color = "black") {
+  fillBox(x, y, color = "#000000") {
     window.ctx.fillStyle = color;
     window.ctx.fillRect(x * BOX_SIZE, y * BOX_SIZE, BOX_SIZE, BOX_SIZE);
   }
@@ -69,30 +77,39 @@ class Game {
   }
 }
 
+// get all the colors and directions from ruleList (build an obj of {color: dir} and an arr of the colors)
+// get the color of the box the ant is on
+// rotate the ant the corresponding direction
+// change the color to the next color in the series from the ruleList
+// move the ant to the space in front of it
+
 const addRuleButton = document.getElementById("addRuleButton");
 addRuleButton.addEventListener("click", addRuleToList);
 const ruleList = document.getElementById("ruleList");
 
 function addRuleToList(color, direction) {
   const ruleForm = document.createElement("form");
-  createRadios(ruleForm);
+  createInputs(ruleForm);
   direction === "L"
-    ? (ruleForm.children[0].checked = true)
-    : (ruleForm.children[2].checked = true);
-
+    ? (ruleForm.children[1].checked = true)
+    : (ruleForm.children[3].checked = true);
   ruleList.appendChild(ruleForm);
   ruleList.appendChild(document.createElement("br"));
 }
 
-function createRadios(ruleForm) {
+function createInputs(ruleForm) {
+  const colorInput = document.createElement("input");
+  colorInput.setAttribute("type", "color");
+  colorInput.setAttribute("class", "colorInput");
+  ruleForm.appendChild(colorInput);
   for (let i = 0; i < 2; i++) {
-    const input = document.createElement("input");
+    const dirInput = document.createElement("input");
     const label = document.createElement("label");
     i === 0 ? (label.innerHTML = "L") : (label.innerHTML = "R");
-    input.setAttribute("type", "radio");
-    input.setAttribute("class", "radio");
-    input.setAttribute("name", "radio");
-    ruleForm.appendChild(input);
+    dirInput.setAttribute("type", "radio");
+    dirInput.setAttribute("class", "radio");
+    dirInput.setAttribute("name", "radio");
+    ruleForm.appendChild(dirInput);
     ruleForm.appendChild(label);
   }
 }
