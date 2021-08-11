@@ -12,14 +12,20 @@ class Game {
   constructor() {
     this.curBox = [50, 50]; // start in middle
     this.direction = 0; // 0 degrees = north, 90 = east, etc...
-    addRuleToList([0, 0, 0, 0], "R");
-    addRuleToList([0, 0, 0, 255], "L");
+    addRuleToList("#000000", "R");
+    addRuleToList("#FFFFFF", "L");
+    this.ruleArr = [];
   }
+
+  // get all the colors and directions from ruleList (build a 2d arr of [color, dir])
+  // get the color of the box the ant is on
+  // rotate the ant the corresponding direction
+  // change the color to the next color in the series from the ruleList
+  // move the ant to the space in front of it
 
   moveAnt() {
     // if on an empty box, turn 90 CCW, flip the color, move forward
     // if on a filled box, turn 90 CW, flip the color, move forward
-    var ruleRadios = document.getElementsByClassName("radio");
     this.isCoordinateFilled(this.curBox, this.direction)
       ? (this.direction -= 90)
       : (this.direction += 90);
@@ -77,24 +83,33 @@ class Game {
   }
 }
 
-// get all the colors and directions from ruleList (build an obj of {color: dir} and an arr of the colors)
-// get the color of the box the ant is on
-// rotate the ant the corresponding direction
-// change the color to the next color in the series from the ruleList
-// move the ant to the space in front of it
-
 const addRuleButton = document.getElementById("addRuleButton");
-addRuleButton.addEventListener("click", addRuleToList);
+addRuleButton.addEventListener("click", handleClick);
 const ruleList = document.getElementById("ruleList");
 
+function getRandomColor() {
+  const chars = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += chars[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function handleClick(e) {
+  const randDir = Math.round(Math.random()) === 0 ? "R" : "L";
+  addRuleToList(getRandomColor(), randDir);
+}
+
 function addRuleToList(color, direction) {
+  debugger;
   const ruleForm = document.createElement("form");
   createInputs(ruleForm);
   direction === "L"
     ? (ruleForm.children[1].checked = true)
     : (ruleForm.children[3].checked = true);
+  ruleForm.children[0].value = color;
   ruleList.appendChild(ruleForm);
-  ruleList.appendChild(document.createElement("br"));
 }
 
 function createInputs(ruleForm) {
