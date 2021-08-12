@@ -12,9 +12,10 @@ class Game {
   constructor() {
     this.curBox = [50, 50]; // start in middle
     this.direction = 0; // 0 degrees = north, 90 = east, etc...
+    this.rulesArr = [];
     addRuleToList("#000000", "R");
     addRuleToList("#FFFFFF", "L");
-    this.ruleArr = [];
+    this.getRules();
   }
 
   // get all the colors and directions from ruleList (build a 2d arr of [color, dir])
@@ -22,14 +23,26 @@ class Game {
   // rotate the ant the corresponding direction
   // change the color to the next color in the series from the ruleList
   // move the ant to the space in front of it
+  getRules() {
+    this.rulesArr = [];
+    const ruleList = document.getElementById("ruleList");
+    const ruleCount = ruleList.children.length;
+    for (let i = 0; i < ruleCount; i++) {
+      const color = ruleList.children[i].children[0].value;
+      let dir;
+      ruleList.children[i].children[1].checked ? (dir = "L") : (dir = "R");
+      this.rulesArr.push([color, dir]);
+    }
+  }
 
   moveAnt() {
     // if on an empty box, turn 90 CCW, flip the color, move forward
     // if on a filled box, turn 90 CW, flip the color, move forward
+    const ruleList = document.getElementById("ruleList");
+    if (ruleList.children.length !== this.rulesArr.length) this.getRules();
     this.isCoordinateFilled(this.curBox, this.direction)
       ? (this.direction -= 90)
       : (this.direction += 90);
-
     if (Math.abs(this.direction) === 360) this.direction = 0;
     this.colorBox(this.curBox);
     const nextBox = this.getBoxInFront();
@@ -85,24 +98,14 @@ class Game {
 
 const addRuleButton = document.getElementById("addRuleButton");
 addRuleButton.addEventListener("click", handleClick);
-const ruleList = document.getElementById("ruleList");
-
-function getRandomColor() {
-  const chars = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += chars[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
 
 function handleClick(e) {
-  const randDir = Math.round(Math.random()) === 0 ? "R" : "L";
-  addRuleToList(getRandomColor(), randDir);
+  const randomDir = Math.round(Math.random()) === 0 ? "R" : "L";
+  addRuleToList(getRandomColor(), randomDir);
 }
 
 function addRuleToList(color, direction) {
-  debugger;
+  const ruleList = document.getElementById("ruleList");
   const ruleForm = document.createElement("form");
   createInputs(ruleForm);
   direction === "L"
@@ -127,4 +130,13 @@ function createInputs(ruleForm) {
     ruleForm.appendChild(dirInput);
     ruleForm.appendChild(label);
   }
+}
+
+function getRandomColor() {
+  const chars = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += chars[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }
