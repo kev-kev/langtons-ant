@@ -13,8 +13,8 @@ class Game {
     this.curBox = [50, 50]; // start in middle
     this.direction = 0; // 0 degrees = north, 90 = east, etc...
     this.rulesArr = [];
-    addRuleToList("#000000", "R");
-    addRuleToList("#FFFFFF", "L");
+    addRuleToList([0, 0, 0, 255], "R");
+    addRuleToList([0, 0, 0, 0], "L");
     this.getRules();
   }
 
@@ -23,6 +23,24 @@ class Game {
   // rotate the ant the corresponding direction
   // change the color to the next color in the series from the ruleList
   // move the ant to the space in front of it
+
+  moveAnt() {
+    // if on an empty box, turn 90 CCW, flip the color, move forward
+    // if on a filled box, turn 90 CW, flip the color, move forward
+    const ruleList = document.getElementById("ruleList");
+    if (ruleList.children.length !== this.rulesArr.length) this.getRules();
+    const curColor = this.getCoordinateColor(this.curBox, this.direction);
+    debugger;
+
+    this.isCoordinateFilled(this.curBox, this.direction)
+      ? (this.direction -= 90)
+      : (this.direction += 90);
+    if (Math.abs(this.direction) === 360) this.direction = 0;
+    this.colorBox(this.curBox);
+    const nextBox = this.getBoxInFront();
+    this.curBox = nextBox;
+  }
+
   getRules() {
     this.rulesArr = [];
     const ruleList = document.getElementById("ruleList");
@@ -35,26 +53,10 @@ class Game {
     }
   }
 
-  moveAnt() {
-    // if on an empty box, turn 90 CCW, flip the color, move forward
-    // if on a filled box, turn 90 CW, flip the color, move forward
-    const ruleList = document.getElementById("ruleList");
-    if (ruleList.children.length !== this.rulesArr.length) this.getRules();
-    this.isCoordinateFilled(this.curBox, this.direction)
-      ? (this.direction -= 90)
-      : (this.direction += 90);
-    if (Math.abs(this.direction) === 360) this.direction = 0;
-    this.colorBox(this.curBox);
-    const nextBox = this.getBoxInFront();
-    this.curBox = nextBox;
-  }
-
-  getCoordinateInfo(coords) {
+  getCoordinateColor(coords) {
     let x, y;
     [x, y] = coords;
-    const imageData = window.ctx.getImageData(x * BOX_SIZE, y * BOX_SIZE, 1, 1);
-
-    console.log(imageData["data"]);
+    return window.ctx.getImageData(x * BOX_SIZE, y * BOX_SIZE, 1, 1)["data"];
   }
 
   getBoxInFront() {
@@ -86,7 +88,7 @@ class Game {
     this.isCoordinateFilled(coords) ? this.clearBox(x, y) : this.fillBox(x, y);
   }
 
-  fillBox(x, y, color = "#000000") {
+  fillBox(x, y, color = [0, 0, 0, 0]) {
     window.ctx.fillStyle = color;
     window.ctx.fillRect(x * BOX_SIZE, y * BOX_SIZE, BOX_SIZE, BOX_SIZE);
   }
@@ -133,10 +135,40 @@ function createInputs(ruleForm) {
 }
 
 function getRandomColor() {
-  const chars = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += chars[Math.floor(Math.random() * 16)];
+  const res = [];
+  for (let i = 0; i < 4; i++) {
+    res.push(Math.floor(Math.random() * 256));
   }
-  return color;
+  return res;
+}
+
+function rgbaToHex(rgbaArr) {
+  let r, g, b, a;
+  [r, g, b, a] = rgbaArr;
+  r = r.toString(16);
+  g = g.toString(16);
+  b = b.toString(16);
+  a = a.toString(16);
+
+  if (r.length == 1) r = "0" + r;
+  if (g.length == 1) g = "0" + g;
+  if (b.length == 1) b = "0" + b;
+
+  return "#" + r + g + b;
+}
+
+function hexToRgba(hexStr) {
+  let r = 0,
+    g = 0,
+    b = 0,
+    a = 1;
+
+  if (hexStr.length == 5) {
+    r = parseInt(hexStr[1] + hexStr[1]);
+    g = parseInt(hexStr[2] + hexStr[2]);
+    b = parseInt(hexStr[3] + hexStr[3]);
+    a = parseInt(hexStr[4] + hexStr[4]);
+  }
+
+  return [r, g, b, a];
 }
