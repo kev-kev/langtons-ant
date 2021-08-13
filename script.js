@@ -30,8 +30,6 @@ class Game {
     const ruleList = document.getElementById("ruleList");
     if (ruleList.children.length !== this.rulesArr.length) this.getRules();
     const curColor = this.getCoordinateColor(this.curBox, this.direction);
-    debugger;
-
     this.isCoordinateFilled(this.curBox, this.direction)
       ? (this.direction -= 90)
       : (this.direction += 90);
@@ -148,27 +146,19 @@ function rgbaToHex(rgbaArr) {
   r = r.toString(16);
   g = g.toString(16);
   b = b.toString(16);
-  a = a.toString(16);
 
   if (r.length == 1) r = "0" + r;
   if (g.length == 1) g = "0" + g;
   if (b.length == 1) b = "0" + b;
-
   return "#" + r + g + b;
 }
 
-function hexToRgba(hexStr) {
+function hexToRgba(h) {
   let r = 0,
     g = 0,
-    b = 0,
-    a = 1;
-
-  if (hexStr.length == 5) {
-    r = parseInt(hexStr[1] + hexStr[1]);
-    g = parseInt(hexStr[2] + hexStr[2]);
-    b = parseInt(hexStr[3] + hexStr[3]);
-    a = parseInt(hexStr[4] + hexStr[4]);
-  }
-
-  return [r, g, b, a];
+    b = 0;
+  r = parseInt("0x" + h[1] + h[2]);
+  g = parseInt("0x" + h[3] + h[4]);
+  b = parseInt("0x" + h[5] + h[6]);
+  return [r, g, b, 255];
 }
