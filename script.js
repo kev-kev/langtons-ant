@@ -14,7 +14,7 @@ class Game {
     this.direction = 0; // 0 degrees = north, 90 = east, etc...
     this.rulesArr = [];
     addRuleToList([0, 0, 0, 255], "R");
-    addRuleToList([0, 0, 0, 0], "L");
+    addRuleToList([255, 255, 255, 255], "L");
     this.getRules();
   }
 
@@ -45,6 +45,7 @@ class Game {
     const ruleCount = ruleList.children.length;
     for (let i = 0; i < ruleCount; i++) {
       const color = ruleList.children[i].children[0].value;
+      console.log(color);
       let dir;
       ruleList.children[i].children[1].checked ? (dir = "L") : (dir = "R");
       this.rulesArr.push([color, dir]);
@@ -101,7 +102,7 @@ addRuleButton.addEventListener("click", handleClick);
 
 function handleClick(e) {
   const randomDir = Math.round(Math.random()) === 0 ? "R" : "L";
-  addRuleToList(getRandomColor(), randomDir);
+  addRuleToList(getRandomRgba(), randomDir);
 }
 
 function addRuleToList(color, direction) {
@@ -111,7 +112,8 @@ function addRuleToList(color, direction) {
   direction === "L"
     ? (ruleForm.children[1].checked = true)
     : (ruleForm.children[3].checked = true);
-  ruleForm.children[0].value = color;
+  console.log(rgbaToHex(color));
+  ruleForm.children[0].value = rgbaToHex(color);
   ruleList.appendChild(ruleForm);
 }
 
@@ -132,11 +134,12 @@ function createInputs(ruleForm) {
   }
 }
 
-function getRandomColor() {
+function getRandomRgba() {
   const res = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     res.push(Math.floor(Math.random() * 256));
   }
+  res.push(255);
   return res;
 }
 
