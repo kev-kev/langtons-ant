@@ -3,14 +3,25 @@
   <head>
     <title>langton's ant</title>
 
-    <link rel="stylesheet" href="/style.css" />
-    <script src="/script.js" defer></script>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./script.js" defer></script>
   </head>
   <body>
     <div class="wrapper">
       <div class="content" role="main">
         <h1>langton's ant</h1>
         <canvas id="myCanvas" width="500" height="500"></canvas>
+        <form id="newAntForm">
+          <select id="dirSelect">
+            <option value="0">0</option>
+            <option value="90">90</option>
+            <option value="180">180</option>
+            <option value="270">270</option>
+          </select>
+          <input id="x" type="number" min="500" max="0" />
+          <input id="y" type="number" min="500" max="0" />
+          <input id="newAntBtn" type="submit" />
+        </form>
       </div>
     </div>
   </body>
